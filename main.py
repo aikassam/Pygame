@@ -1,78 +1,40 @@
 import pygame
 
-pygame.init()
-
-pygame.display.set_caption("Pygame Platformer")
+from spritesheet import Spritesheet
 
 
-SCREEN_WIDTH = 1600
+#Global constants
+SCREEN_WIDTH = 800
 SCREEN_HEIGHT = SCREEN_WIDTH * 9 / 16
 
-SCREEN_CENTER_WIDTH = SCREEN_WIDTH / 2
-SCREEN_CENTER_HEIGHT = SCREEN_HEIGHT / 2
 
-PLAYER_VELOCITY = 3
 
-def backgroundColor():
-    screen.fill((137,207,240))
+pygame.init()
+# pygame.display.set_caption("Pokemon")
 
-#Initialize screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+sprite = Spritesheet("dinosprites.png", 24, 24)
+frames = sprite.parseSpritesheet((0,0,0), 2)
+animationCooldown = 100
+currentFrame = 0
 
-#Imports player image and converts to desired size
-spriteSizeX = 32
-spriteSizeY = 32
-playerSprite = pygame.image.load("mushroom.png")
-player = pygame.transform.scale(playerSprite, (spriteSizeX, spriteSizeY))
-
-pygame.display.set_icon(playerSprite)
-
-backgroundColor()
-
-#Initializes coordinates for player to spawn in and adds player to screen
-playerX = SCREEN_CENTER_WIDTH
-playerY = SCREEN_CENTER_HEIGHT
-screen.blit(player, (playerX, playerY))
-
-
+lastUpdate = pygame.time.get_ticks()
 
 running = True
 
-#Run loop
+#Game loop
 while running:
 
+    screen.fill((0,0,0))
+    currentTime = pygame.time.get_ticks()
+    if currentTime - lastUpdate >= animationCooldown:
+        currentFrame += 1
+        lastUpdate = currentTime
+        if currentFrame == 4:
+            currentFrame = 0
 
-    #Moves player using WASD
-    key = pygame.key.get_pressed()
-    if key[pygame.K_a] == True:
-        backgroundColor()
-        playerX -= PLAYER_VELOCITY
-        screen.blit(player, (playerX, playerY))
-    elif key[pygame.K_w] == True:
-        backgroundColor()
-        playerY -= PLAYER_VELOCITY
-        screen.blit(player, (playerX, playerY))
-    elif key[pygame.K_d] == True:
-        backgroundColor()
-        playerX += PLAYER_VELOCITY
-        screen.blit(player, (playerX, playerY))
-    elif key[pygame.K_s] == True:
-        backgroundColor()
-        playerY += PLAYER_VELOCITY
-        screen.blit(player, (playerX, playerY))
-
-    #Prevents player from leaving screen
-    if playerX < 0:
-        playerX = 0
-    elif playerX > SCREEN_WIDTH - spriteSizeX:
-        playerX = SCREEN_WIDTH - spriteSizeX
-    elif playerY < 0:
-        playerY = 0
-    elif playerY > SCREEN_HEIGHT - spriteSizeY:
-        playerY = SCREEN_HEIGHT - spriteSizeY
-
-
+    screen.blit(frames[currentFrame], (0,0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
